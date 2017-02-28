@@ -1,0 +1,153 @@
+---
+- name: Create Jenkins group
+  group:
+    name: jenkins
+    state: present
+- name: Create Jenkins user
+  user:
+    name: jenkins
+    group: jenkins
+- name: Install Build Pipeline Plugin
+  jenkins_plugin:
+    name: build-pipeline-plugin
+    version: "1.5.6"
+    with_dependencies: yes
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Build Pipeline Plugin Dependencies
+  jenkins_plugin:
+    name: parameterized-trigger
+    version:  "2.17"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Build Pipeline Plugin Dependencies
+  jenkins_plugin:
+    name: jquery
+    version:  "1.11.2-0"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Publish Over SSH Plugin
+  jenkins_plugin:
+    name: publish-over-ssh
+    version: "1.14"
+    with_dependencies: yes
+    params: "{{ jenkins_params_plugins }}"
+- name: Install SSH Plugin
+  jenkins_plugin:
+    name: ssh
+    version: "2.4"
+    with_dependencies: yes
+    params: "{{ jenkins_params_plugins }}"
+- name: Install SonarQube Plugin
+  jenkins_plugin:
+    name: sonar
+    version: "2.5"
+    with_dependencies: yes
+    params: "{{ jenkins_params_plugins }}"
+- name: Install SonarQube Plugin Dependencies
+  jenkins_plugin:
+    name: jquery
+    version:  "1.11.2-0"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Artifactory Plugin
+  jenkins_plugin:
+    name: artifactory
+    version: "2.8.2"
+    with_dependencies: yes
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Artifactory Plugin Dependencies
+  jenkins_plugin:
+    name: ivy
+    version: "1.17"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Artifactory Plugin Dependencies
+  jenkins_plugin:
+    name: gradle
+    version:  "1.15"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Artifactory Plugin Dependencies
+  jenkins_plugin:
+    name: workflow-cps
+    version:  "2.13"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Artifactory Plugin Dependencies
+  jenkins_plugin:
+    name: credentials
+    version:  "2.1.8"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Artifactory Plugin Dependencies
+  jenkins_plugin:
+    name: workflow-step-api
+    version:  "2.3"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin
+  jenkins_plugin:
+    name: git
+    version:  "3.0.1"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin Dependencies
+  jenkins_plugin:
+    name: workflow-scm-step
+    version:  "1.14.2"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin Dependencies
+  jenkins_plugin:
+    name: git-client
+    version:  "2.1.0"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin Dependencies
+  jenkins_plugin:
+    name: mailer
+    version:  "1.18"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin Dependencies
+  jenkins_plugin:
+    name: matrix-project
+    version:  "1.7.1"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin Dependencies
+  jenkins_plugin:
+    name: promoted-builds
+    version:  "2.27"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin Dependencies
+  jenkins_plugin:
+    name: scm-api
+    version:  "1.3"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin Dependencies
+  jenkins_plugin:
+    name: ssh-credentials
+    version:  "1.12"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin Dependencies
+  jenkins_plugin:
+    name: token-macro
+    version:  "1.12.1"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin Dependencies
+  jenkins_plugin:
+    name: credentials
+    version:  "2.1.8"
+    params: "{{ jenkins_params_plugins }}"
+- name: Install jenkins-python (Ansible Dependency)
+  pip:
+    name: python-jenkins
+    state: latest
+- name: Install python-lxml (Ansible Dependency)
+  apt:
+    name: python-lxml
+    state:  present
+- name: Install Docker-py (Ansible Dependency)
+  pip:
+    name: docker-py
+    state:  present
+#- name: Restart jenkins
+#  docker_container:
+#    name: compose-jenkins
+#    restart: yes
+- name: Create Build job
+  jenkins_job:
+    config: "{{ lookup('template', 'templates/build.xml.j2') }}"
+    name: build
+    url:  "{{ jenkins_url }}"
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_pass }}"
+#    token:  "{{ jenkins_token }}"

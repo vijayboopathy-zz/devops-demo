@@ -1,0 +1,7 @@
+[local]
+localhost ansible_connection=local
+
+[cluster]
+192.168.0.55
+192.168.0.52
+192.168.0.72

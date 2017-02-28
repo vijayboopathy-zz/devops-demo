@@ -1,0 +1,14 @@
+[local]
+localhost ansible_connection=local
+
+[ci]
+192.168.0.73
+
+[rm]
+192.168.0.74
+
+[monitoring]
+192.168.0.75
+
+[worker]
+192.168.0.76

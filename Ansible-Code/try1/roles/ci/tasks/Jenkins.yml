@@ -1,0 +1,57 @@
+---
+- name: Create Jenkins group
+  group:
+    name: jenkins
+    state: present
+- name: Create Jenkins user
+  user:
+    name: jenkins
+    group: jenkins
+- name: Install Build Pipeline Plugin
+  jenkins_plugin:
+    name: build-pipeline-plugin
+    with_dependencies: yes
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Publish Over SSH Plugin
+  jenkins_plugin:
+    name: publish-over-ssh
+    with_dependencies: yes
+    params: "{{ jenkins_params_plugins }}"
+- name: Install SSH Plugin
+  jenkins_plugin:
+    name: ssh
+    with_dependencies: yes
+    params: "{{ jenkins_params_plugins }}"
+- name: Install SonarQube Plugin
+  jenkins_plugin:
+    name: sonar
+    with_dependencies: yes
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Artifactory Plugin
+  jenkins_plugin:
+    name: artifactory
+    with_dependencies: yes
+    params: "{{ jenkins_params_plugins }}"
+- name: Install Git Plugin
+  jenkins_plugin:
+    name: git
+    params: "{{ jenkins_params_plugins }}"
+- name: Install jenkins-python (Ansible Dependency)
+  pip:
+    name: python-jenkins
+    state: latest
+- name: Install python-lxml (Ansible Dependency)
+  apt:
+    name: python-lxml
+    state:  present
+- name: Install Docker-py (Ansible Dependency)
+  pip:
+    name: docker-py
+    state:  present
+- name: Create Build job
+  jenkins_job:
+    config: "{{ lookup('template', 'templates/build.xml.j2') }}"
+    name: build
+    url:  "{{ jenkins_url }}"
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_pass }}"

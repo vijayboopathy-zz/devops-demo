@@ -1,0 +1,5 @@
+---
+- hosts: ci
+  become: true
+  roles:
+    - ci

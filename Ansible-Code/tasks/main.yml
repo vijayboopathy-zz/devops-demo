@@ -1,0 +1,78 @@
+# This playbook will configure the CI infrastructure
+# This is the centralized directory to mount volumes in docker
+- name: Create work directory (/home/ubuntu/docker)
+  file:
+    name: docker
+    state: directory
+# Jenkins home directory. For reusablity
+- name: Create jenkins directory
+  file:
+    name: docker/jenkins_home
+    state: directory
+    recurse: yes
+    mode: 0777
+# For storing tomcat-users.xml file
+- name: Creat tomcat directory
+  file:
+    name: docker/tomcat
+    state: directory
+    recurse: yes
+- name: Copy tomcat configurations
+  copy:
+    src: files/tomcat-users.xml
+    dest: docker/tomcat/tomcat-users.xml
+#- name: Copy Jenkins configurations
+#  template:
+#    src:  templates/jenkins.xml.j2
+#    dest: /home/ubuntu/docker/jenkins_home/config.xml
+#    owner: ubuntu
+#    group:  ubuntu
+#    mode: 0777
+# Bring up the infrastructure
+- name: Docker compose up
+#  async:  35
+#  poll: 0
+#become: true
+#become_user: root
+  docker_service:
+    project_name: ci
+    definition:
+      version: '2'
+      services:
+        jenkins:
+          image: jenkins:2.19.4-alpine
+          ports:
+            - "8080:8080"
+            - "50000:50000"
+          volumes:
+            - "/home/ubuntu/docker/jenkins_home:/var/jenkins_home"
+          container_name: compose-jenkins
+
+        artifactory:
+          image: docker.bintray.io/jfrog/artifactory-oss
+          ports:
+            - "8081:8081"
+          volumes:
+            - /home/ubuntu/docker/artifactory/data:/var/opt/jfrog/artifactory/data
+            - /home/ubuntu/docker/artifactory/logs:/var/opt/jfrog/artifactory/logs
+            - /home/ubuntu/docker/artifactory/etc:/var/opt/jfrog/artifactory/etc
+          container_name: compose-artifactory-oss
+
+        sonarqube:
+          image: sonarqube
+          ports:
+            - "9000:9000"
+            - "9092:9092"
+          container_name: compose-sonarqube
+
+        tomcat:
+          image: tomcat
+          ports:
+            - "8888:8080"
+          volumes:
+            - /home/ubuntu/docker/tomcat/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml
+          container_name: compose-tomcat
+  register: test
+
+- debug:
+    var:  test

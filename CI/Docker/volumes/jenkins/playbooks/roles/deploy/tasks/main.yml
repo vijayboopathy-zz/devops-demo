@@ -1,0 +1,44 @@
+---
+- name: Get the artifact from Jenkins
+  get_url:
+    url: http://192.168.0.62:8080/job/Package/lastSuccessfulBuild/CMADSession$CMADSession/artifact/CMADSession/CMADSession/0.0.12-SNAPSHOT/CMADSession-0.0.12-SNAPSHOT.war
+    url_username: admin
+    url_password: admin
+    force_basic_auth: yes
+    dest: /var/jenkins_home/playbooks/cmad.war
+    mode: 0755
+  when: local
+- name: Copy the Dockerfile template
+  template:
+    src: templates/Dockerfile
+    dest: /var/jenkins_home/playbooks
+    owner: jenkins
+    mode: 0755
+  when: local
+- name: Install py-pip
+  easy_install:
+    name: pip
+    state: latest
+  become: true
+  become_user: root
+  when: local
+- name: Install docker-py
+  pip:
+    name: docker-py
+    state: present
+  become: true
+  become_user: root
+  when: local
+- name: Log into Dockerhub
+  docker_login:
+    username: dialectpython
+    password: krithyka9
+    email: dialectpython@gmail.com
+  when: local
+- name: Build our custom image
+  docker_image:
+    path: /var/jenkins_home/playbooks
+    name: schoolofdevops/tomcatapp
+    tag: v0.1.0
+    push: yes
+  when: local

@@ -1,0 +1,3 @@
+---
+# Site wide playbook
+- include: ci.yml

@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Get the artifact from Jenkins
+      get_url:
+        url: http://192.168.0.62:8080/job/Package/lastSuccessfulBuild/CMADSession$CMADSession/artifact/CMADSession/CMADSession/0.0.12-SNAPSHOT/CMADSession-0.0.12-SNAPSHOT.war
+        url_username: admin
+        url_password: admin
+        force_basic_auth: yes
+        dest: /tmp/cmad.war
+        mode: 0755
+    - name: Deploy the application
+      shell: curl -T "/tmp/cmad.war" "http://admin:password@192.168.0.62:8888/manager/text/deploy?path=/cmad&update=true"
+

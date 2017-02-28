@@ -1,0 +1,41 @@
+---
+# Install Docker Engine
+- name: Update cache
+  apt:
+    update_cache: yes
+- name: Install apt-transport-https and ca-certificates
+  apt:
+    name: "{{item}}"
+    state: latest
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+- name: Add apt key
+  apt_key:
+    keyserver: hkp://ha.pool.sks-keyservers.net:80
+    id: 58118E89F3A912897C070ADBF76221572C52609D
+- name: Add docker.list
+  command: echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" | sudo tee /etc/apt/sources.list.d/docker.list
+- name: Update apt cache again
+  apt:
+    update_cache: yes
+- name: Install Docker Engine
+  apt:
+    name: docker-engine
+    state: latest
+#  command: wget -qO- https://get.docker.com/ | sh
+#  become: true
+#  become_user: root
+- name: Start Docker Service
+  service:
+    name: docker
+    state: started
+# Install Docker Compose
+- name: Install python-pip
+  apt:
+    name: python-pip
+    state: latest
+- name: Install Docker Compose
+  pip:
+    name: docker-compose
+    state: latest

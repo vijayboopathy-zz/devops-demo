@@ -1,0 +1,12 @@
+---
+jenkins_url:  http://192.168.0.73:8080
+jenkins_user: admin
+jenkins_pass: 1nitCr0n
+jenkins_token:  ff8b7b71bd5e926830bf948d6d3a0900
+
+jenkins_params_plugins:
+  url: http://192.168.0.73:8080
+  url_username: admin
+  url_password: 1nitCr0n
+  jenkins_home: /home/ubuntu/docker/jenkins_home
+  validate_certs: False

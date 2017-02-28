@@ -1,1 +1,2 @@
-# devops-demo
+# devops-demos
+Devops Demos
